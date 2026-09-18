@@ -1,0 +1,5 @@
+bin/
+*.out
+.git/
+.DS_Store
+*.md

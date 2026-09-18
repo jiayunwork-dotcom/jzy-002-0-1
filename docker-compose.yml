@@ -1,0 +1,22 @@
+# 一键启动:docker compose up --build
+# 纯计算服务:无数据库、无台账、无前/大屏。
+services:
+  heatexchanger:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: heatexchanger-rating:latest
+    container_name: heatexchanger-rating
+    ports:
+      - "${HEX_PORT:-8080}:8080"
+    environment:
+      ADDR: ":8080"
+    restart: unless-stopped
+    # distroless 镜像内无 shell,健康检查由编排平台按需指向 GET /healthz。
+    healthcheck:
+      # 使用二进制自带的本地探针(无需 curl/wget)。
+      test: ["CMD", "/usr/local/bin/heateserver", "-healthcheck", "-addr=:8080"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
